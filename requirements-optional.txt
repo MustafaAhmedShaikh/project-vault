@@ -1,0 +1,9 @@
+# Optional extras. The core tool needs only the Python standard library.
+# Install only what you use:  pip install -r requirements-optional.txt
+
+# Google Drive upload (STORAGE_TARGET=gdrive)
+google-api-python-client>=2.100
+google-auth>=2.20
+
+# S3-compatible upload: AWS S3, Cloudflare R2, Backblaze B2, MinIO (STORAGE_TARGET=s3)
+boto3>=1.28

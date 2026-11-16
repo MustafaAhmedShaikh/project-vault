@@ -1,0 +1,39 @@
+# --- Secrets (never commit) ---
+.env
+.env.*
+!.env.example
+*.json.key
+credentials*.json
+*service_account*.json
+id_rsa*
+*.p12
+*.pem
+*.key
+
+# --- ProjectVault runtime files ---
+TRIGGER_BACKUP
+backups/
+*.zip
+*.tar.gz
+# NOTE: .vaultignore is intentionally NOT ignored; commit it so exclusions are shared.
+
+# --- Python ---
+venv/
+.venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+.coverage
+htmlcov/
+
+# --- OS & editor files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
