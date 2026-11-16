@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dev requirements
+        run: python -m pip install -r requirements-dev.txt
+      - name: Byte-compile root scripts
+        shell: bash
+        run: |
+          for f in ./*.py; do
+            python -m py_compile "$f"
+          done
+      - name: Run tests
+        run: python -m pytest -q
+
+  lint:
+    name: lint scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bash syntax check
+        run: |
+          for f in ./*.sh; do
+            echo "bash -n $f"
+            bash -n "$f"
+          done
+      - name: PowerShell parse check
+        shell: pwsh
+        run: |
+          $failed = $false
+          foreach ($f in Get-ChildItem -Path . -Filter *.ps1) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors -and $errors.Count -gt 0) {
+              $failed = $true
+              foreach ($e in $errors) { Write-Host "$($f.Name): $($e.Message) (line $($e.Extent.StartLineNumber))" }
+            } else {
+              Write-Host "OK: $($f.Name)"
+            }
+          }
+          if ($failed) { exit 1 }
